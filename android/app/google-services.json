@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "280206252928",
+    "firebase_url": "https://esiot2023-27782-default-rtdb.firebaseio.com",
+    "project_id": "esiot2023-27782",
+    "storage_bucket": "esiot2023-27782.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:280206252928:android:5a7f08886a5e67511ebf65",
+        "android_client_info": {
+          "package_name": "com.example.monitoring_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "280206252928-rmn0v31u7j0g1irdk5td4smu6v4jaea9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-iZTCYKHpkyh0r9mkGlp-JdhXtpfcDjI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "280206252928-rmn0v31u7j0g1irdk5td4smu6v4jaea9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
