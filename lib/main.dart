@@ -33,6 +33,7 @@ class _TemperatureScreenState extends State<TemperatureScreen> {
   String suhu = 'N/A';
   String kelembapan = 'N/A';
   bool isLedOn = false;
+  bool isPumpOn = false;
   bool isMotionOn = false;
   String soilMoisture = 'N/A';
 
@@ -57,7 +58,8 @@ class _TemperatureScreenState extends State<TemperatureScreen> {
           kelembapan = '${values['kelembapan']}%';
           soilMoisture = '${values['soil']}%';
           isLedOn = values['relay'] == 1;
-          isMotionOn = values['motion'] == 1;
+          isPumpOn = values['relay'] == 1;
+          isMotionOn = values['pir'] == 1;
 
           // Tampilkan alert hanya jika belum ditampilkan sebelumnya
           if (!isHighHumidityAlertShown &&
@@ -75,12 +77,19 @@ class _TemperatureScreenState extends State<TemperatureScreen> {
                 true; // Set variabel penanda menjadi true
           }
 
-          if (double.parse(soilMoisture.replaceAll('%', '')) <= 10) {
-            toggleLed(true); // Mengaktifkan water pump jika soil moisture < 20%
+          if (isLedOn) {
+            toggleLed(true); // Mengaktifkan water pump jika isLedOn = true
+          } else if (!isLedOn) {
+            toggleLed(false); // Mematikan water pump jika isLedOn = false
           }
 
-          if (double.parse(soilMoisture.replaceAll('%', '')) >= 40) {
-            toggleLed(false); // Mematikan water pump jika soil moisture >= 20%
+          if (double.parse(soilMoisture.replaceAll('%', '')) <= 10) {
+            togglePump(
+                true); // Mengaktifkan water pump jika soil moisture < 20%
+          }
+
+          if (double.parse(soilMoisture.replaceAll('%', '')) >= 30) {
+            togglePump(false); // Mematikan water pump jika soil moisture >= 20%
           }
         });
       }
@@ -94,23 +103,34 @@ class _TemperatureScreenState extends State<TemperatureScreen> {
   }
 
   void toggleLed(bool isTurnOn) {
+    setState(() {
+      isLedOn = isTurnOn;
+    });
+
     int newLedValue = isTurnOn ? 1 : 0;
-    _databaseReference.update({'relay': newLedValue}).then((_) {
-      setState(() {
-        isLedOn = isTurnOn;
-      });
-    }).catchError((error) {
+    _databaseReference.update({'relay': newLedValue}).catchError((error) {
       print('Error: $error');
     });
   }
 
   void toggleMotion(bool isTurnOn) {
+    setState(() {
+      isMotionOn = isTurnOn;
+    });
+
     int newMotionValue = isTurnOn ? 1 : 0;
-    _databaseReference.update({'motion': newMotionValue}).then((_) {
-      setState(() {
-        isLedOn = isTurnOn;
-      });
-    }).catchError((error) {
+    _databaseReference.update({'pir': newMotionValue}).catchError((error) {
+      print('Error: $error');
+    });
+  }
+
+  void togglePump(bool isTurnOn) {
+    setState(() {
+      isPumpOn = isTurnOn;
+    });
+
+    int newLedValue = isTurnOn ? 1 : 0;
+    _databaseReference.update({'relay': newLedValue}).catchError((error) {
       print('Error: $error');
     });
   }
@@ -307,10 +327,11 @@ class _TemperatureScreenState extends State<TemperatureScreen> {
                         children: [
                           ElevatedButton(
                             onPressed: () {
-                              toggleLed(!isLedOn);
+                              toggleLed(isLedOn ? false : true);
                             },
                             child: Text(
-                                isLedOn ? 'Turn Off Pump' : 'Turn On Pump'),
+                              isLedOn ? 'Turn Off Pump' : 'Turn On Pump',
+                            ),
                           ),
                         ],
                       ),
@@ -339,9 +360,9 @@ class _TemperatureScreenState extends State<TemperatureScreen> {
                     children: [
                       ElevatedButton(
                         onPressed: () {
-                          toggleMotion(!isMotionOn);
+                          toggleMotion(isMotionOn ? false : true);
                         },
-                        child: Text(isMotionOn ? 'Turn Off ' : 'Turn On '),
+                        child: Text(isMotionOn ? 'Turn Off' : 'Turn On'),
                       ),
                     ],
                   ),
